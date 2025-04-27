@@ -10,7 +10,6 @@ class Quadrilateral:
     point2: Point
     point3: Point
     point4: Point
-    isRhombus: bool = field(init=False)
 
     def order_points(self) -> tuple[Point, ...]:
         """
