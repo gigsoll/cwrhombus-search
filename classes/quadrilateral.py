@@ -64,6 +64,7 @@ class Quadrilateral:
         for i in range(4):
             next_vert = vertices.traverseWithStep(1, 1, current_vert)[0]
             result.append(self.calculate_distance(current_vert, next_vert))
+            current_vert = next_vert
 
         return tuple(result)
 
