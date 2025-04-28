@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from .point import Point
 from .linkedList import CircularLinkedList
+from matplotlib.patches import Polygon
 import math
 
 
@@ -28,7 +29,10 @@ class Quadrilateral:
                 point.x - centroid_x)
         distances = self.sort_dict(distances)
 
-        return tuple(points[i] for i in distances.keys())
+        ordered = tuple(points[i] for i in distances.keys())
+
+        self.point1, self.point2, self.point3, self.point4 = ordered
+        return ordered
 
     def create_circular_linked_list(self) -> CircularLinkedList:
         """
@@ -68,6 +72,14 @@ class Quadrilateral:
 
         return tuple(result)
 
+    def to_plt_polygon(self) -> Polygon:
+        return Polygon([
+            (self.point1.x, self.point1.y),
+            (self.point2.x, self.point2.y),
+            (self.point3.x, self.point3.y),
+            (self.point4.x, self.point4.y),
+        ])
+
     @staticmethod
     def sort_dict(dictionary: dict) -> dict:
         """
@@ -78,12 +90,12 @@ class Quadrilateral:
     @staticmethod
     def calculate_distance(point1: Point, point2: Point) -> float:
         """
-        Gets two points and returns distance between them
+        Calculates and returns the distance between two points.
         """
-        return round(math.sqrt(
-            math.sqrt(math.pow(point2.x - point1.x, 2)) +
-            math.sqrt(math.pow(point2.y - point1.y, 2))),
-            3)
+        dx = point2.x - point1.x
+        dy = point2.y - point1.y
+        return round(math.hypot(dx, dy), 1)
+
 
 
 if __name__ == "__main__":

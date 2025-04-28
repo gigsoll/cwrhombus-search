@@ -20,4 +20,4 @@ def generate_points(bounds: tuple[int, int], n: int, file: str) -> None:
 
 
 if __name__ == "__main__":
-    generate_points((0, 100), 50, "dots.json")
+    generate_points((0, 20), 70, "dots.json")
