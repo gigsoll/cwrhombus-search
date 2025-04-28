@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from rhombus import Rhombus
-from exceptions import NotASquare
+from .rhombus import Rhombus
+from .exceptions import NotASquare
 
 
 @dataclass

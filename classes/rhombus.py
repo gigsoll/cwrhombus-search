@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from quadrilateral import Quadrilateral
-from exceptions import NotARhombus
-from point import Point
+from .quadrilateral import Quadrilateral
+from .exceptions import NotARhombus
+from .point import Point
 
 
 @dataclass

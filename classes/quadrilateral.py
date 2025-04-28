@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
-from point import Point
-from linkedList import CircularLinkedList
+from .point import Point
+from .linkedList import CircularLinkedList
 import math
 
 
