@@ -3,7 +3,7 @@ import json
 import os
 
 
-@dataclass
+@dataclass(eq=True, frozen=True)
 class Point:
     x: int
     y: int
