@@ -1,4 +1,4 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from .point import Point
 from .linkedList import CircularLinkedList
 from matplotlib.patches import Polygon
@@ -95,7 +95,6 @@ class Quadrilateral:
         dx = point2.x - point1.x
         dy = point2.y - point1.y
         return round(math.hypot(dx, dy), 1)
-
 
 
 if __name__ == "__main__":

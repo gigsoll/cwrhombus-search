@@ -14,7 +14,7 @@ class Rhombus(Quadrilateral):
     def calculate_area(self):
         diag1, diag2 = self.calculate_diagonals()
         return (diag1 * diag2) / 2
-3
+
 
 if __name__ == "__main__":
     r = Rhombus(
