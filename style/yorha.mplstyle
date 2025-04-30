@@ -1,0 +1,13 @@
+axes.autolimit_mode: data
+
+axes.axisbelow: True
+axes.edgecolor: none
+axes.facecolor: "#DCD8C0"
+axes.grid: True
+axes.labelcolor:green
+axes.prop_cycle: cycler('color', ["#696655", "#CD664D", "#94896E", "#CCA98D", "#CC8DA4", "#9CCC8D", "#CCA9A9", "#B4E0E0", "#AFA7CC"])
+grid.color: "#464239"
+grid.alpha: 0.1
+xtick.color: "#454138"
+ytick.color: "#454138"
+figure.facecolor: "#D1CDB7"
