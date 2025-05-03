@@ -1,12 +1,15 @@
 import sys
 from PyQt6.QtWidgets import (QMainWindow,
+                             QWidget,
                              QApplication,
                              QPushButton,
                              QRadioButton,
                              QLabel,
                              QSpinBox,
                              QTextEdit,
-                             QButtonGroup,)
+                             QButtonGroup,
+                             QVBoxLayout,
+                             QHBoxLayout)
 from PyQt6.QtGui import QGuiApplication, QPixmap
 from typing import cast
 
@@ -19,12 +22,7 @@ class MainUI(QMainWindow):
         self.method: str = "brute"
 
         self.create_elements()
-
-    def center(self):
-        qr = self.frameGeometry()
-        cp = QGuiApplication.primaryScreen().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())
+        self.create_layout()
 
     def create_elements(self) -> None:
         self.app_name_header: QLabel = QLabel(
@@ -69,7 +67,6 @@ class MainUI(QMainWindow):
         self.point_count_sb.setMinimum(0)
         self.point_count_sb.setMaximum(100)
         self.point_count_sb.valueChanged.connect(self.spin_box_handler)
-        self.point_count_sb.setGeometry(100, 0, 200, 200)
 
         self.metrics: QTextEdit = QTextEdit(self)
         self.metrics.setDisabled(True)
@@ -79,6 +76,39 @@ class MainUI(QMainWindow):
 
         self.result: QLabel = QLabel(self)
         self.result.setPixmap(QPixmap("style/assets/square.png"))
+
+    def create_layout(self) -> None:
+        # define layouts
+        self.main_layout: QHBoxLayout = QHBoxLayout()
+        self.sidebar: QVBoxLayout = QVBoxLayout()
+        self.graph: QVBoxLayout = QVBoxLayout()
+        self.point_count: QHBoxLayout = QHBoxLayout()
+
+        # config main layout
+        self.main: QWidget = QWidget(self)
+        self.setCentralWidget(self.main)
+        self.main.setLayout(self.main_layout)
+        self.main_layout.addLayout(self.sidebar)
+        self.main_layout.addLayout(self.graph)
+
+        # config point count
+        self.point_count.addWidget(self.point_count_label)
+        self.point_count.addWidget(self.point_count_sb)
+
+        # config sidebar layout
+        self.sidebar.addWidget(self.app_name_header)
+        self.sidebar.addWidget(self.solution_header)
+        self.sidebar.addWidget(self.check_brute)
+        self.sidebar.addWidget(self.check_smort)
+        self.sidebar.addLayout(self.point_count)
+        self.sidebar.addWidget(self.solution_metrics_header)
+        self.sidebar.addWidget(self.metrics)
+        self.sidebar.addWidget(self.do_things_btn)
+
+        #c config graph layout
+        self.graph.addWidget(self.result)
+
+
 
     def radio_button_handler(self) -> None:
         radio: QRadioButton = cast(QRadioButton, self.sender())
@@ -101,6 +131,12 @@ class MainUI(QMainWindow):
             self.do_things_btn.setDisabled(True)
         else:
             self.do_things_btn.setDisabled(False)
+
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QGuiApplication.primaryScreen().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
 
 
 if __name__ == "__main__":
