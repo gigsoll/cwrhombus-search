@@ -1,0 +1,106 @@
+QMainWindow {
+    background-image: url("style/assets/bacground.png") 0 0 0 0 stretch stretch;
+}
+
+QLineEdit {
+    padding: 8px; /* Approx. 0.5rem */
+    font-size: 14px;
+    border: none;
+    outline: none; /* Not supported — has no effect */
+    background-color: #dcd8c0;
+    color: black; /* or use 'inherit' behavior in code */
+    letter-spacing: 0.5px; /* optional, some Qt versions support */
+    font-weight: normal;
+    border-radius: 0px;
+}
+
+QPushButton:enabled {
+    padding: 8px; /* ~0.5rem */
+    font-size: 14px; /* ~1em */
+    border: none;
+    background-color: #bab5a1;
+    color: black; /* or set in your code to mimic `inherit` */
+    letter-spacing: 0.5px; /* optional */
+    font-weight: normal;
+    border-radius: 0;
+}
+
+QPushButton:enabled:hover {
+    background-color: #454138;
+    color: #dcd8c0;
+}
+
+QPushButton:enabled:pressed {
+    background-color: #dcd8c0;
+    color: #454138;
+}
+
+QRadioButton {
+    spacing: 8px;
+    font-size: 14px;
+    color: #454138;
+}
+
+/* Square indicator */
+QRadioButton::indicator {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #454138;
+    background-color: #dcd8c0;
+}
+
+/* Hover effect */
+QRadioButton::indicator:hover {
+    background-color: #454138;
+    border-color: #bab5a1;
+}
+
+/* Checked state – add inner square via background-image OR solid color */
+QRadioButton::indicator:checked {
+    background-color: #454138;
+    border: 2px solid #dcd8c0;
+    image: url(:/check.png); /* optional – use your own image */
+}
+
+/* Or alternatively, simulate selection with a border + background */
+QRadioButton::indicator:checked {
+    background-color: #dcd8c0;
+    border: 2px solid #454138;
+    image: url("style/assets/square.png"); /* Provide your image here */
+}
+
+/* Disabled state */
+QRadioButton:disabled {
+    color: #888888;
+}
+QRadioButton::indicator:disabled {
+    background-color: #cccccc;
+    border: 1px solid #888888;
+}
+
+QLabel {
+    font-size: 14px;
+    color: #454138;
+    background-color: transparent;  /* or #dcd8c0 if you want visible bg */
+    padding: 4px 6px;
+    letter-spacing: 0.5px;
+    font-family: "Segoe UI", sans-serif;
+}
+
+QLabel[heading="true"] {
+    font-size: 24px;
+    font-weight: normal;
+    letter-spacing: 4px; /* approx. 0.5rem */
+    color: #454138;
+    padding: 6px;
+}
+
+QTextEdit {
+    background-color: #CCC8B1;
+    border: none;
+    border-radius: 0px;
+    padding: 8px;
+    font-size: 14px;
+    color: #454138;
+    font-family: "Segoe UI", sans-serif;
+}
