@@ -33,10 +33,12 @@ class MainUI(QMainWindow):
         self.solution_header: QLabel = QLabel(
             "Обреіть спосіб розв'язання",
             self)
+        self.solution_header.setProperty("heading2", True)
 
         self.solution_metrics_header: QLabel = QLabel(
             "Метрики способу розв'язання",
             self)
+        self.solution_metrics_header.setProperty("heading2", True)
 
         self.point_count_label: QLabel = QLabel(
             "Кількість точок для обрахунків",
@@ -75,37 +77,47 @@ class MainUI(QMainWindow):
         self.do_things_btn.setDisabled(True)
 
         self.result: QLabel = QLabel(self)
-        self.result.setPixmap(QPixmap("style/assets/square.png"))
+        self.result.setPixmap(QPixmap("media/result.png"))
 
     def create_layout(self) -> None:
+        self.sidebar = QWidget()
+        self.checkbox_wraper = QWidget()
+        self.point_count_wraper = QWidget()
         # define layouts
         self.main_layout: QHBoxLayout = QHBoxLayout()
-        self.sidebar: QVBoxLayout = QVBoxLayout()
         self.graph: QVBoxLayout = QVBoxLayout()
-        self.point_count: QHBoxLayout = QHBoxLayout()
+        self.point_count: QHBoxLayout = QHBoxLayout(self.point_count_wraper)
+        self.point_count_wraper.setProperty("tint", True)
+        self.sidebar_layout: QVBoxLayout = QVBoxLayout(self.sidebar)
+        self.checkbox_wraper.setProperty("tint", True)
+        self.radio: QVBoxLayout = QVBoxLayout(self.checkbox_wraper)
 
         # config main layout
         self.main: QWidget = QWidget(self)
         self.setCentralWidget(self.main)
         self.main.setLayout(self.main_layout)
-        self.main_layout.addLayout(self.sidebar)
+        self.main_layout.addWidget(self.sidebar)
         self.main_layout.addLayout(self.graph)
 
         # config point count
         self.point_count.addWidget(self.point_count_label)
         self.point_count.addWidget(self.point_count_sb)
 
-        # config sidebar layout
-        self.sidebar.addWidget(self.app_name_header)
-        self.sidebar.addWidget(self.solution_header)
-        self.sidebar.addWidget(self.check_brute)
-        self.sidebar.addWidget(self.check_smort)
-        self.sidebar.addLayout(self.point_count)
-        self.sidebar.addWidget(self.solution_metrics_header)
-        self.sidebar.addWidget(self.metrics)
-        self.sidebar.addWidget(self.do_things_btn)
+        self.radio.addWidget(self.check_brute)
+        self.radio.addWidget(self.check_smort)
 
-        #c config graph layout
+        # config sidebar layout
+        self.sidebar_layout.addWidget(self.app_name_header)
+        self.sidebar_layout.addWidget(self.solution_header)
+        self.sidebar_layout.addWidget(self.checkbox_wraper)
+        self.sidebar_layout.addWidget(self.point_count_wraper)
+        self.sidebar_layout.addWidget(self.solution_metrics_header)
+        self.sidebar_layout.addWidget(self.metrics)
+        self.sidebar_layout.addWidget(self.do_things_btn)
+        self.main.setContentsMargins(15, 15, 15, 15)
+        self.sidebar.setProperty("sidebar", True)
+
+        # config graph layout
         self.graph.addWidget(self.result)
 
 

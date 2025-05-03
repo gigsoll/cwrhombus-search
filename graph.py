@@ -10,8 +10,8 @@ colors = prop_cycle.by_key()['color']
 squares, rhhombes = smort("dots.json", (0, 50))
 
 fig, ax = plt.subplots(1, 1)
-fig.set_figheight(8)
-fig.set_figwidth(8)
+fig.set_figheight(7)
+fig.set_figwidth(7)
 
 for r in rhhombes:
     pol = r.to_plt_polygon()
@@ -34,4 +34,4 @@ ax.scatter(x_vals, y_vals, s=20, marker="s", color=colors[2])
 
 plt.ylim(0, 21)
 plt.xlim(0, 21)
-plt.show()
+plt.savefig("media/result.png")
