@@ -1,10 +1,13 @@
+* {
+    font-size: 16px;
+}
+
 QMainWindow {
     background-image: url("style/assets/bacground.png") 0 0 0 0 stretch stretch;
 }
 
 QLineEdit {
     padding: 8px; /* Approx. 0.5rem */
-    font-size: 14px;
     border: none;
     outline: none; /* Not supported — has no effect */
     background-color: #dcd8c0;
@@ -16,7 +19,6 @@ QLineEdit {
 
 QPushButton:enabled {
     padding: 8px; /* ~0.5rem */
-    font-size: 14px; /* ~1em */
     border: none;
     background-color: #bab5a1;
     color: black; /* or set in your code to mimic `inherit` */
@@ -35,14 +37,14 @@ QPushButton:enabled:pressed {
     color: #454138;
 }
 
-QRadioButton {
+QRadioButton, QCheckBox {
     spacing: 8px;
-    font-size: 14px;
     color: #454138;
+    padding: 6px;
 }
 
 /* Square indicator */
-QRadioButton::indicator {
+QRadioButton::indicator, QCheckBox::indicator {
     width: 20px;
     height: 20px;
     border: 2px solid #454138;
@@ -50,36 +52,40 @@ QRadioButton::indicator {
 }
 
 /* Hover effect */
-QRadioButton::indicator:hover {
+QRadioButton::indicator:hover,
+QCheckBox::indicator:hover {
     background-color: #454138;
     border-color: #bab5a1;
 }
 
 /* Checked state – add inner square via background-image OR solid color */
-QRadioButton::indicator:checked {
+QRadioButton::indicator:checked
+QCheckBox::indicator:checked {
     background-color: #454138;
     border: 2px solid #dcd8c0;
     image: url(:/check.png); /* optional – use your own image */
 }
 
 /* Or alternatively, simulate selection with a border + background */
-QRadioButton::indicator:checked {
+QRadioButton::indicator:checked,
+QCheckBox::indicator:checked {
     background-color: #dcd8c0;
     border: 2px solid #454138;
     image: url("style/assets/square.png"); /* Provide your image here */
 }
 
 /* Disabled state */
-QRadioButton:disabled {
+QRadioButton:disabled,
+QCheckBox:disabled {
     color: #888888;
 }
-QRadioButton::indicator:disabled {
+QRadioButton::indicator:disabled,
+QCheckBox::indicator:disabled {
     background-color: #cccccc;
     border: 1px solid #888888;
 }
 
 QLabel {
-    font-size: 14px;
     color: #454138;
     background-color: transparent;  /* or #dcd8c0 if you want visible bg */
     padding: 4px 6px;
@@ -96,11 +102,103 @@ QLabel[heading="true"] {
 }
 
 QTextEdit {
-    background-color: #CCC8B1;
+    background-color: #DCD8C0;
     border: none;
     border-radius: 0px;
     padding: 8px;
     font-size: 14px;
     color: #454138;
     font-family: "Segoe UI", sans-serif;
+}
+
+QWidget[sidebar="true"] {
+    background-color: #DCD8C0;
+    padding: 180px;
+}
+
+QWidget[drop_shadow="true"] {
+    border-right: 3px solid rgba(27, 25, 22, 0.5);
+    border-bottom: 3px solid rgba(27, 25, 22, 0.5);
+}
+
+/* === HEADING 2 === */
+QLabel[heading2="true"] {
+    font-weight: normal;
+    letter-spacing: 2px;
+    color: #454138;
+    padding: 4px 6px;
+}
+
+/* === QSPINBOX STYLE === */
+QSpinBox {
+    background-color: #dcd8c0;
+    border: none;
+    border-radius: 0;
+    padding: 6px;
+    color: #454138;
+}
+
+/* Up/down buttons */
+QSpinBox::up-button, QSpinBox::down-button {
+    background-color: #DCD8C0;
+    border: none;
+    width: 20px;
+    height: 18px;
+}
+
+QSpinBox::up-button:hover, QSpinBox::down-button:hover {
+    background-color: #454138;
+}
+
+QSpinBox::up-button {
+    image: url("style/assets/up.png");
+}
+
+QSpinBox::down-button {
+    image: url("style/assets/down.png");
+}
+
+QSpinBox::up-button:hover {
+    image: url("style/assets/up_hover.png");
+}
+
+QSpinBox::down-button:hover {
+    image: url("style/assets/down_hover.png");
+}
+
+QSpinBox::up-arrow, QSpinBox::down-arrow {
+    width: 10px;
+    height: 10px;
+}
+
+QWidget[tint="true"] {
+    background-color: #CCC8B1;
+}
+
+QPushButton:disabled {
+    padding: 8px; /* ~0.5rem */
+    border: none;
+    background-color: #CCC8B1;
+    color: black; /* or set in your code to mimic `inherit` */
+    letter-spacing: 0.5px; /* optional */
+    font-weight: normal;
+    border-radius: 0;
+}
+
+QProgressBar {
+    border: none;
+    background-color: #dcd8c0;
+    color: #454138;
+    text-align: center;
+    height: 20px;
+    font-family: "Segoe UI", sans-serif;
+    font-size: 14px;
+    padding: 2px;
+    border-radius: 0px;
+}
+
+QProgressBar::chunk {
+    background-color: #CD664D;
+    width: 10px;
+    margin: 0px;
 }

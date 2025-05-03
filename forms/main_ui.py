@@ -9,7 +9,9 @@ from PyQt6.QtWidgets import (QMainWindow,
                              QTextEdit,
                              QButtonGroup,
                              QVBoxLayout,
-                             QHBoxLayout)
+                             QHBoxLayout,
+                             QCheckBox,
+                             QProgressBar)
 from PyQt6.QtGui import QGuiApplication, QPixmap
 from typing import cast
 
@@ -35,6 +37,11 @@ class MainUI(QMainWindow):
             self)
         self.solution_header.setProperty("heading2", True)
 
+        self.generation_settings: QLabel = QLabel(
+            "Параметри створення випадкових точок",
+            self)
+        self.generation_settings.setProperty("heading2", True)
+
         self.solution_metrics_header: QLabel = QLabel(
             "Метрики способу розв'язання",
             self)
@@ -44,6 +51,16 @@ class MainUI(QMainWindow):
             "Кількість точок для обрахунків",
             self)
 
+        self.point_min_label: QLabel = QLabel(
+            "Мінімальне значення X та Y    ",
+            self
+        )
+
+        self.point_max_label: QLabel = QLabel(
+            "Максимальне значення X та Y ",
+            self
+        )
+
         self.check_brute: QRadioButton = QRadioButton(
             "Повний перебір",
             self)
@@ -52,6 +69,16 @@ class MainUI(QMainWindow):
         self.check_smort: QRadioButton = QRadioButton(
             "Використовуючи векторну математику",
             self)
+        
+        self.check_regenerate: QCheckBox = QCheckBox(
+            "Створити новий набір точок",
+            self
+        )
+
+        self.progressbar_label: QLabel = QLabel(
+            "Процес виконання",
+            self
+        )
 
         # object name binding to be able to set category
         self.check_brute.setObjectName("brute")
@@ -66,8 +93,14 @@ class MainUI(QMainWindow):
 
         # spin box config, changes depending on which method is selected
         self.point_count_sb: QSpinBox = QSpinBox(self)
+        self.point_min_sb: QSpinBox = QSpinBox(self)
+        self.point_max_sb: QSpinBox = QSpinBox(self)
+        self.point_min_sb.setMinimum(0)
+        self.point_max_sb.setMinimum(0)
         self.point_count_sb.setMinimum(0)
         self.point_count_sb.setMaximum(100)
+        self.point_min_sb.setMaximum(150)
+        self.point_max_sb.setMaximum(150)
         self.point_count_sb.valueChanged.connect(self.spin_box_handler)
 
         self.metrics: QTextEdit = QTextEdit(self)
@@ -79,18 +112,29 @@ class MainUI(QMainWindow):
         self.result: QLabel = QLabel(self)
         self.result.setPixmap(QPixmap("media/result.png"))
 
+        self.progresbar: QProgressBar = QProgressBar(self)
+
     def create_layout(self) -> None:
+        # wrapers
         self.sidebar = QWidget()
         self.checkbox_wraper = QWidget()
-        self.point_count_wraper = QWidget()
+        self.point_info_wraper = QWidget()
+        self.metrics_wraper = QWidget()
+
         # define layouts
         self.main_layout: QHBoxLayout = QHBoxLayout()
+        self.progresbar_grouping: QHBoxLayout = QHBoxLayout()
         self.graph: QVBoxLayout = QVBoxLayout()
-        self.point_count: QHBoxLayout = QHBoxLayout(self.point_count_wraper)
-        self.point_count_wraper.setProperty("tint", True)
+        self.point_min: QHBoxLayout = QHBoxLayout()
+        self.point_max: QHBoxLayout = QHBoxLayout()
+        self.point_count: QHBoxLayout = QHBoxLayout()
+        self.properties: QVBoxLayout = QVBoxLayout(self.point_info_wraper)
+        self.point_info_wraper.setProperty("tint", True)
         self.sidebar_layout: QVBoxLayout = QVBoxLayout(self.sidebar)
         self.checkbox_wraper.setProperty("tint", True)
         self.radio: QVBoxLayout = QVBoxLayout(self.checkbox_wraper)
+        self.metrics_group: QVBoxLayout = QVBoxLayout(self.metrics_wraper)
+        self.metrics_wraper.setProperty("tint", True)
 
         # config main layout
         self.main: QWidget = QWidget(self)
@@ -103,24 +147,45 @@ class MainUI(QMainWindow):
         self.point_count.addWidget(self.point_count_label)
         self.point_count.addWidget(self.point_count_sb)
 
+        # config point min max
+        self.point_min.addWidget(self.point_min_label)
+        self.point_min.addWidget(self.point_min_sb)
+        self.point_max.addWidget(self.point_max_label)
+        self.point_max.addWidget(self.point_max_sb)
+
+        # add point info into wraper
+        self.properties.addLayout(self.point_count)
+        self.properties.addLayout(self.point_min)
+        self.properties.addLayout(self.point_max)
+        self.properties.addWidget(self.check_regenerate)
+
         self.radio.addWidget(self.check_brute)
         self.radio.addWidget(self.check_smort)
+
+        self.progresbar_grouping.addWidget(self.progressbar_label)
+        self.progresbar_grouping.addWidget(self.progresbar)
+
+        # metrics wraper
+        self.metrics_group.addLayout(self.progresbar_grouping)
+        self.metrics_group.addWidget(self.metrics)
 
         # config sidebar layout
         self.sidebar_layout.addWidget(self.app_name_header)
         self.sidebar_layout.addWidget(self.solution_header)
         self.sidebar_layout.addWidget(self.checkbox_wraper)
-        self.sidebar_layout.addWidget(self.point_count_wraper)
+        self.sidebar_layout.addWidget(self.generation_settings)
+        self.sidebar_layout.addWidget(self.point_info_wraper)
         self.sidebar_layout.addWidget(self.solution_metrics_header)
-        self.sidebar_layout.addWidget(self.metrics)
+        self.sidebar_layout.addWidget(self.metrics_wraper)
         self.sidebar_layout.addWidget(self.do_things_btn)
-        self.main.setContentsMargins(15, 15, 15, 15)
+        self.main.setContentsMargins(0, 10, 10, 10)
         self.sidebar.setProperty("sidebar", True)
+        self.sidebar.setProperty("drop_shadow", True)
+
+        self.progresbar.setValue(43)
 
         # config graph layout
         self.graph.addWidget(self.result)
-
-
 
     def radio_button_handler(self) -> None:
         radio: QRadioButton = cast(QRadioButton, self.sender())
