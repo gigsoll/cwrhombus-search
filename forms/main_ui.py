@@ -11,8 +11,11 @@ from PyQt6.QtWidgets import (QMainWindow,
                              QVBoxLayout,
                              QHBoxLayout,
                              QCheckBox,
-                             QProgressBar)
+                             QProgressBar,)
 from PyQt6.QtGui import QGuiApplication, QPixmap
+from PyQt6.QtCore import QThread
+from forms.workers.bruteforce import BrutforceWorker
+from forms.workers.smort import SmortWorker
 from typing import cast
 
 
@@ -187,6 +190,8 @@ class MainUI(QMainWindow):
         # config graph layout
         self.graph.addWidget(self.result)
 
+        self.do_things_btn.clicked.connect(self.start_task)
+
     def radio_button_handler(self) -> None:
         radio: QRadioButton = cast(QRadioButton, self.sender())
         if not radio.isChecked():
@@ -214,6 +219,39 @@ class MainUI(QMainWindow):
         cp = QGuiApplication.primaryScreen().availableGeometry().center()
         qr.moveCenter(cp)
         self.move(qr.topLeft())
+
+    def start_task(self):
+        file = "dots.json"
+        area = (self.point_min_sb.value(),
+                self.point_max_sb.value())
+
+        self.thread = QThread()
+
+        if self.method == "brute":
+            self.worker = BrutforceWorker(file)
+        elif self.method == "smort":
+            self.worker = SmortWorker(file, area)
+
+        self.worker.moveToThread(self.thread)
+        self.thread.started.connect(self.worker.run)
+
+        self.worker.progress.connect(self.update_progress)
+        self.worker.finished.connect(self.task_finished)
+
+        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
+
+        self.do_things_btn.setEnabled(False)
+        self.thread.start()
+
+    def update_progress(self, done, total):
+        self.progresbar.setMaximum(total)
+        self.progresbar.setValue(done)
+
+    def task_finished(self, squares, rhombs):
+        print(f"Finished. Found {len(squares)} squares and {len(rhombs)} rhombs.")
+        self.do_things_btn.setEnabled(True)
 
 
 if __name__ == "__main__":
