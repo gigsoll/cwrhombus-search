@@ -2,7 +2,7 @@ from PyQt6.QtCore import QObject, pyqtSignal
 from solutions.bruteforce import brutforce
 
 
-class Worker(QObject):
+class BruteForceWokrer(QObject):
     rhomb_progress = pyqtSignal(int, int)
     square_progress = pyqtSignal(int, int)
     finished = pyqtSignal(object, object)
