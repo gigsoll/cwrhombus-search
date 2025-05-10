@@ -17,6 +17,8 @@ from PyQt6.QtCore import QThread
 from forms.workers.bruteforce import BrutforceWorker
 from forms.workers.smort import SmortWorker
 from typing import cast
+from classes.point import point_reader
+from forms.workers.graph import plot_data
 
 
 class MainUI(QMainWindow):
@@ -72,7 +74,7 @@ class MainUI(QMainWindow):
         self.check_smort: QRadioButton = QRadioButton(
             "Використовуючи векторну математику",
             self)
-        
+
         self.check_regenerate: QCheckBox = QCheckBox(
             "Створити новий набір точок",
             self
@@ -237,6 +239,7 @@ class MainUI(QMainWindow):
 
         self.worker.progress.connect(self.update_progress)
         self.worker.finished.connect(self.task_finished)
+        self.worker.stats.connect(self.show_metrics)  # <== Connect metrics signal here
 
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
@@ -250,8 +253,16 @@ class MainUI(QMainWindow):
         self.progresbar.setValue(done)
 
     def task_finished(self, squares, rhombs):
-        print(f"Finished. Found {len(squares)} squares and {len(rhombs)} rhombs.")
+        print(squares, rhombs)
         self.do_things_btn.setEnabled(True)
+        points = point_reader("dots.json")
+        plot_data(squares, rhombs, points)
+        self.result.setPixmap(QPixmap("media/result.png"))
+
+    def show_metrics(self, elapsed_time: float, peak_memory: int) -> None:
+        time_msg = f"⏱ Elapsed Time: {elapsed_time:.3f} seconds"
+        mem_msg = f"🧠 Peak Memory: {peak_memory / (1024 * 1024):.3f} MB"
+        self.metrics.setPlainText(f"{time_msg}\n{mem_msg}")
 
 
 if __name__ == "__main__":

@@ -1,18 +1,10 @@
-from PyQt6.QtCore import QObject, pyqtSignal
-from solutions.bruteforce import brutforce
+from solutions.bruteforce import BrutForce
+from forms.workers.base_worker import BaseWorker
 
 
-class BrutforceWorker(QObject):
-    progress = pyqtSignal(int, int)
-    finished = pyqtSignal(object, object)
-
+class BrutforceWorker(BaseWorker):
     def __init__(self, file: str):
-        super().__init__()
-        self.file = file
+        super().__init__(solver=BrutForce(), file=file)
 
-    def run(self):
-        def report(i, total):
-            self.progress.emit(i, total)
-
-        squares, rhombs = brutforce(self.file, on_progress_rhomb=report)
-        self.finished.emit(squares, rhombs)
+    def configure_solver(self):
+        return BrutForce()
