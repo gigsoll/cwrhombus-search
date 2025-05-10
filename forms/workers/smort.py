@@ -1,19 +1,10 @@
-from PyQt6.QtCore import QObject, pyqtSignal
-from solutions.smort import smort
+from solutions.smort import Smart
+from forms.workers.base_worker import BaseWorker
 
 
-class SmortWorker(QObject):
-    progress = pyqtSignal(int, int)
-    finished = pyqtSignal(object, object)
-
+class SmortWorker(BaseWorker):
     def __init__(self, file: str, area: tuple[int, int]):
-        super().__init__()
-        self.file = file
-        self.area = area
+        super().__init__(solver=Smart(), file=file, area=area)
 
-    def run(self):
-        def report(i, total):
-            self.progress.emit(i, total)
-
-        squares, rhombs = smort(self.file, self.area, report)
-        self.finished.emit(squares, rhombs)
+    def configure_solver(self):
+        return Smart()
