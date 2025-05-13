@@ -9,13 +9,10 @@ from typing import Callable, List, Tuple, Set
 
 class Smart(SolutionInterface):
 
-    def solve(self, file: str, area: Tuple[int, int], 
+    def solve(self, data: List[Point], area: Tuple[int, int], 
               on_progress: Callable[[int, int], None] = lambda i, total: None
               ) -> Tuple[List[Square], List[Rhombus]]:
-        """
-        Solves the problem by finding rhombuses and splitting them into squares if possible.
-        """
-        points = point_reader(file)
+        points = data
         rhombuses = self.find_rhombuses(points, area, on_progress)
         squares, remaining_rhombs = self.split_into_squares(rhombuses, on_progress)
 
@@ -24,9 +21,6 @@ class Smart(SolutionInterface):
     def find_rhombuses(self, points: List[Point], 
                        area: Tuple[int, int], 
                        on_progress: Callable[[int, int], None]) -> List[Rhombus]:
-        """
-        Optimized method to find all rhombuses from a set of points
-        """
         combos = list(combinations(points, 2))
         points_set = set(points)
         used_points = set()
@@ -103,9 +97,6 @@ class Smart(SolutionInterface):
                           x: float, y: float, 
                           is_positive: bool, 
                           bound: Tuple[Tuple[int, int], Tuple[int, int]]) -> Set[Point]:
-        """
-        Efficiently generates perpendicular vector points from a side
-        """
         vec_side = side[1].x - side[0].x, side[1].y - side[0].y
         perp = (vec_side[1], -vec_side[0]) if is_positive else (-vec_side[1], vec_side[0])
 
@@ -116,7 +107,6 @@ class Smart(SolutionInterface):
         current_x, current_y = x, y
         step = 0.5
 
-        # Limit the number of iterations to prevent infinite loops
         max_steps = 1000
         for _ in range(max_steps):
             if not (bound[0][0] <= current_x <= bound[0][1]) or not (bound[1][0] <= current_y <= bound[1][1]):

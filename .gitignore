@@ -5,6 +5,14 @@ __pycache__/
 
 # C extensions
 *.so
+*.odt
+*.drawio
+*.pdf
+*.bkp
+media/
+dots.json
+.idea/
+out/
 
 # Distribution / packaging
 .Python

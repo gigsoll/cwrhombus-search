@@ -2,12 +2,13 @@ from abc import ABC, abstractmethod
 from typing import Callable, List, Tuple
 from classes.square import Square
 from classes.rhombus import Rhombus
+from classes.point import Point
 
 
 class SolutionInterface(ABC):
 
     @abstractmethod
-    def solve(self, file: str, area: Tuple[int, int], 
+    def solve(self, data: List[Point], area: Tuple[int, int], 
               on_progress: Callable[[int, int], None]) -> Tuple[List[Square], List[Rhombus]]:
         """Main solve method to be implemented"""
         pass

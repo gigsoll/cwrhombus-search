@@ -12,6 +12,9 @@ class Quadrilateral:
     point3: Point
     point4: Point
 
+    def __repr__(self, emoji: str = "❓") -> str:
+        return f"{emoji} ({self.point1}, {self.point2}, {self.point3}, {self.point4})"
+
     def order_points(self) -> tuple[Point, ...]:
         """
         Calculates order in which to create not overlapping polygon

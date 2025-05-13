@@ -1,0 +1,125 @@
+@startuml
+
+class Exception
+Package Exceptions {
+    class NotARhombus {
+        + message
+    }
+    class NotASquare {
+        + message
+    }
+}
+Exception <|-- NotARhombus
+Exception <|-- NotASquare
+
+' Data structures
+Package DataStructures {
+    class CircularLinkedList
+    class Point {
+        # {field} x
+        # {field} y
+        + {method} point_reader()
+        + {method} point_writer()
+
+    }
+    class Quadrilateral {
+        # {field} point1
+        # {field} point2
+        # {field} point3
+        # {field} point4
+
+        - {method} order_points()
+        - {method} create_circular_linked_list()
+        - {method} sort_dict()
+        - {method} calculate_distance()
+        + {method} calculate_diagonals()
+        + {method} calculate_sides()
+        + {method} to_plt_polygon()
+
+    }
+    class Rhombus {
+        - {method} __post_init__()
+        + {method} calculate_area()
+    }
+    class Square {
+        - {method} __post_init__()
+    }
+}
+
+Quadrilateral <|-- Rhombus
+Rhombus <|-- Square
+Rhombus --> NotARhombus
+Square --> NotASquare
+
+Package Solutions {
+    interface SolutionInterface {
+        + {method} solve()
+        + {method} find_rhombuses()
+        + {method} split_into_squares()
+        + {method} calc_perp_vectors()
+
+    }
+    class Smart {
+        IMPLEMENTATION SolutionInterface
+    }
+    class BruteForce {
+        IMPLEMENTATION SolutionInterface
+    }
+}
+SolutionInterface <|.. Smart
+SolutionInterface <|.. BruteForce
+
+Quadrilateral --> Point
+Quadrilateral --> CircularLinkedList
+
+BruteForce --> Rhombus
+Smart --> Rhombus
+BruteForce --> Square
+Smart --> Square
+
+' Forms
+Package Forms {
+    class MainUI {
+        - {method} __init__()
+        - {method} create_elements()
+        - {method} create_layout()
+        - {method} radio_button_handler()
+        - {method} spin_box_handler()
+        - {method} center()
+        - {method} start_task()
+        - {method} update_progress()
+        - {method} task_finished()
+        - {method} show_metrics()
+    }
+
+
+    abstract BaseWorker {
+        - {field} progress
+        - {field} finished
+        - {field} stats
+        + {method} __init__()
+        + {method} configure_solver()
+        + {method} run()
+    }
+    class BrutforceWorker {
+        - {method} __init__()
+        + {method} configure_solver()
+    }
+    class SmortWorker {
+        - {method} __init__()
+        + {method} configure_solver()
+    }
+}
+class PyQT6.QMainWindow
+class PyQT6.QObject
+PyQT6.QMainWindow <|-- MainUI
+BaseWorker <|-- BrutforceWorker
+BaseWorker <|-- SmortWorker
+BrutforceWorker --> BruteForce
+SmortWorker --> Smart
+MainUI --> SmortWorker
+MainUI --> BrutforceWorker
+QObject <|-- BaseWorker
+
+
+@enduml
