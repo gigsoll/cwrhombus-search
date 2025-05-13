@@ -1,4 +1,5 @@
 import sys
+import time
 from typing import List, cast
 
 from PyQt6.QtCore import QThread
@@ -6,7 +7,6 @@ from PyQt6.QtGui import QGuiApplication, QPixmap
 from PyQt6.QtWidgets import (
     QApplication,
     QButtonGroup,
-    QCheckBox,
     QFileDialog,
     QHBoxLayout,
     QLabel,
@@ -35,7 +35,8 @@ class MainUI(QMainWindow):
         self.method: str = "brute"
         self.points: List[Point] = []
         self.DOTS_FILE = "dots.json"
-
+        self.squares: List[Point] = []
+        self.rhombs: List[Point] = []
         self.create_elements()
         self.create_layout()
 
@@ -109,7 +110,7 @@ class MainUI(QMainWindow):
         self.save_btn = QPushButton("Зберегти точки", self)
 
         self.metrics: QTextEdit = QTextEdit(self)
-        self.metrics.setDisabled(True)
+        self.metrics.setDisabled(False)
 
         self.do_things_btn: QPushButton = QPushButton("Виконати", self)
         self.do_things_btn.setDisabled(True)
@@ -226,6 +227,7 @@ class MainUI(QMainWindow):
 
     def start_task(self):
         area = (0, self.point_max_sb.value())
+        self.start_time = time.time()  # Store start time
 
         self.thread = QThread()
 
@@ -239,7 +241,6 @@ class MainUI(QMainWindow):
 
         self.worker.progress.connect(self.update_progress)
         self.worker.finished.connect(self.task_finished)
-        self.worker.stats.connect(self.show_metrics)
 
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
@@ -253,14 +254,20 @@ class MainUI(QMainWindow):
         self.progresbar.setValue(done)
 
     def task_finished(self, squares, rhombs):
+        self.squares = squares
+        self.rhombs = rhombs
+        print(self.squares)
+        print(self.rhombs)
         self.do_things_btn.setEnabled(True)
-        plot_data(squares, rhombs, self.points)
+        plot_data(self.squares, self.rhombs, self.points)
         self.result.setPixmap(QPixmap("media/result.png"))
-
-    def show_metrics(self, elapsed_time: float, peak_memory: int) -> None:
-        time_msg = f"⏱ Elapsed Time: {elapsed_time:.3f} seconds"
-        mem_msg = f"🧠 Peak Memory: {peak_memory / (1024 * 1024):.3f} MB"
-        self.metrics.setPlainText(f"{time_msg}\n{mem_msg}")
+        
+        # Calculate and show execution time
+        elapsed_time = time.time() - self.start_time
+        self.metrics.setPlainText(
+            f"⏱ Час виконання: {elapsed_time:.3f} секунд\n"
+            f"Квадрати: {self.squares}\n"
+            f"Ромби: {self.rhombs}")
 
     def generate_new_points(self) -> None:
         count = self.point_count_sb.value()
