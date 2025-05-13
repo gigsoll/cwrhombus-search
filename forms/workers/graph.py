@@ -1,4 +1,4 @@
-import matplotlib.pyplot as plt
+gimport matplotlib.pyplot as plt
 from classes.point import point_reader, Point
 from classes.rhombus import Rhombus
 from classes.square import Square

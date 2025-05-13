@@ -9,7 +9,6 @@ __pycache__/
 *.drawio
 *.pdf
 *.bkp
-media/
 dots.json
 .idea/
 out/
