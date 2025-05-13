@@ -9,10 +9,10 @@ from typing import Callable, List, Tuple, Set
 
 class Smart(SolutionInterface):
 
-    def solve(self, file: str, area: Tuple[int, int], 
+    def solve(self, data: List[Point], area: Tuple[int, int], 
               on_progress: Callable[[int, int], None] = lambda i, total: None
               ) -> Tuple[List[Square], List[Rhombus]]:
-        points = point_reader(file)
+        points = data
         rhombuses = self.find_rhombuses(points, area, on_progress)
         squares, remaining_rhombs = self.split_into_squares(rhombuses, on_progress)
 

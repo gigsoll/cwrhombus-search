@@ -28,8 +28,6 @@ def plot_data(squares: list[Square],
         pol.set_facecolor('none')
         ax.add_patch(pol)
 
-    points = point_reader("dots.json")
-
     x_vals = [p.x for p in points]
     y_vals = [p.y for p in points]
 

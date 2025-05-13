@@ -10,10 +10,10 @@ class BrutForce(SolutionInterface):
     def __init__(self):
         self._rhombus_points_cache = {}
 
-    def solve(self, file: str, area: Tuple[int, int],
+    def solve(self, data: List[point.Point], area: Tuple[int, int],
               on_progress: Callable[[int, int], None] = lambda i, total: None
               ) -> Tuple[List[square.Square], List[rhombus.Rhombus]]:
-        points = point.point_reader(file)
+        points = data
 
         if isinstance(points, str):
             raise ValueError("File does not exist")

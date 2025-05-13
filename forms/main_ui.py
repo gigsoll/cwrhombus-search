@@ -1,5 +1,5 @@
 import sys
-from typing import cast
+from typing import List, cast
 
 from PyQt6.QtCore import QThread
 from PyQt6.QtGui import QGuiApplication, QPixmap
@@ -7,6 +7,7 @@ from PyQt6.QtWidgets import (
     QApplication,
     QButtonGroup,
     QCheckBox,
+    QFileDialog,
     QHBoxLayout,
     QLabel,
     QMainWindow,
@@ -19,10 +20,11 @@ from PyQt6.QtWidgets import (
     QWidget,
 )
 
-from classes.point import point_reader
+from classes.point import Point, point_reader, point_writer
 from forms.workers.bruteforce import BrutforceWorker
 from forms.workers.graph import plot_data
 from forms.workers.smort import SmortWorker
+from generate_points import generate_points
 
 
 class MainUI(QMainWindow):
@@ -31,6 +33,8 @@ class MainUI(QMainWindow):
         self.setFixedSize(1200, 675)
         self.center()
         self.method: str = "brute"
+        self.points: List[Point] = []
+        self.DOTS_FILE = "dots.json"
 
         self.create_elements()
         self.create_layout()
@@ -60,11 +64,6 @@ class MainUI(QMainWindow):
             "Кількість точок для обрахунків",
             self)
 
-        self.point_min_label: QLabel = QLabel(
-            "Мінімальне значення X та Y    ",
-            self
-        )
-
         self.point_max_label: QLabel = QLabel(
             "Максимальне значення X та Y ",
             self
@@ -78,11 +77,6 @@ class MainUI(QMainWindow):
         self.check_smort: QRadioButton = QRadioButton(
             "Використовуючи векторну математику",
             self)
-
-        self.check_regenerate: QCheckBox = QCheckBox(
-            "Створити новий набір точок",
-            self
-        )
 
         self.progressbar_label: QLabel = QLabel(
             "Процес виконання",
@@ -102,15 +96,17 @@ class MainUI(QMainWindow):
 
         # spin box config, changes depending on which method is selected
         self.point_count_sb: QSpinBox = QSpinBox(self)
-        self.point_min_sb: QSpinBox = QSpinBox(self)
         self.point_max_sb: QSpinBox = QSpinBox(self)
-        self.point_min_sb.setMinimum(0)
         self.point_max_sb.setMinimum(0)
         self.point_count_sb.setMinimum(0)
         self.point_count_sb.setMaximum(100)
-        self.point_min_sb.setMaximum(150)
         self.point_max_sb.setMaximum(150)
         self.point_count_sb.valueChanged.connect(self.spin_box_handler)
+
+        # Point management buttons
+        self.generate_btn = QPushButton("Згенерувати точки", self)
+        self.open_btn = QPushButton("Відкрити точки", self)
+        self.save_btn = QPushButton("Зберегти точки", self)
 
         self.metrics: QTextEdit = QTextEdit(self)
         self.metrics.setDisabled(True)
@@ -134,7 +130,6 @@ class MainUI(QMainWindow):
         self.main_layout: QHBoxLayout = QHBoxLayout()
         self.progresbar_grouping: QHBoxLayout = QHBoxLayout()
         self.graph: QVBoxLayout = QVBoxLayout()
-        self.point_min: QHBoxLayout = QHBoxLayout()
         self.point_max: QHBoxLayout = QHBoxLayout()
         self.point_count: QHBoxLayout = QHBoxLayout()
         self.properties: QVBoxLayout = QVBoxLayout(self.point_info_wraper)
@@ -144,6 +139,7 @@ class MainUI(QMainWindow):
         self.radio: QVBoxLayout = QVBoxLayout(self.checkbox_wraper)
         self.metrics_group: QVBoxLayout = QVBoxLayout(self.metrics_wraper)
         self.metrics_wraper.setProperty("tint", True)
+        self.file_buttons: QHBoxLayout = QHBoxLayout()
 
         # config main layout
         self.main: QWidget = QWidget(self)
@@ -156,17 +152,19 @@ class MainUI(QMainWindow):
         self.point_count.addWidget(self.point_count_label)
         self.point_count.addWidget(self.point_count_sb)
 
-        # config point min max
-        self.point_min.addWidget(self.point_min_label)
-        self.point_min.addWidget(self.point_min_sb)
+        # config point max
         self.point_max.addWidget(self.point_max_label)
         self.point_max.addWidget(self.point_max_sb)
 
+        # config file buttons
+        self.file_buttons.addWidget(self.generate_btn)
+        self.file_buttons.addWidget(self.open_btn)
+        self.file_buttons.addWidget(self.save_btn)
+
         # add point info into wraper
         self.properties.addLayout(self.point_count)
-        self.properties.addLayout(self.point_min)
         self.properties.addLayout(self.point_max)
-        self.properties.addWidget(self.check_regenerate)
+        self.properties.addLayout(self.file_buttons)
 
         self.radio.addWidget(self.check_brute)
         self.radio.addWidget(self.check_smort)
@@ -191,12 +189,14 @@ class MainUI(QMainWindow):
         self.sidebar.setProperty("sidebar", True)
         self.sidebar.setProperty("drop_shadow", True)
 
-        self.progresbar.setValue(43)
-
         # config graph layout
         self.graph.addWidget(self.result)
 
+        # Connect signals
         self.do_things_btn.clicked.connect(self.start_task)
+        self.generate_btn.clicked.connect(self.generate_new_points)
+        self.open_btn.clicked.connect(self.open_points)
+        self.save_btn.clicked.connect(self.save_points)
 
     def radio_button_handler(self) -> None:
         radio: QRadioButton = cast(QRadioButton, self.sender())
@@ -210,8 +210,6 @@ class MainUI(QMainWindow):
             case "smort":
                 self.method = "smort"
                 self.point_count_sb.setMaximum(1000)
-
-        print(self.method)
 
     def spin_box_handler(self) -> None:
         spinbox: QSpinBox = cast(QSpinBox, self.sender())
@@ -227,23 +225,21 @@ class MainUI(QMainWindow):
         self.move(qr.topLeft())
 
     def start_task(self):
-        file = "dots.json"
-        area = (self.point_min_sb.value(),
-                self.point_max_sb.value())
+        area = (0, self.point_max_sb.value())
 
         self.thread = QThread()
 
         if self.method == "brute":
-            self.worker = BrutforceWorker(file)
+            self.worker = BrutforceWorker(self.points)
         elif self.method == "smort":
-            self.worker = SmortWorker(file, area)
+            self.worker = SmortWorker(self.points, area)
 
         self.worker.moveToThread(self.thread)
         self.thread.started.connect(self.worker.run)
 
         self.worker.progress.connect(self.update_progress)
         self.worker.finished.connect(self.task_finished)
-        self.worker.stats.connect(self.show_metrics)  # <== Connect metrics signal here
+        self.worker.stats.connect(self.show_metrics)
 
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
@@ -257,16 +253,55 @@ class MainUI(QMainWindow):
         self.progresbar.setValue(done)
 
     def task_finished(self, squares, rhombs):
-        print(squares, rhombs)
         self.do_things_btn.setEnabled(True)
-        points = point_reader("dots.json")
-        plot_data(squares, rhombs, points)
+        plot_data(squares, rhombs, self.points)
         self.result.setPixmap(QPixmap("media/result.png"))
 
     def show_metrics(self, elapsed_time: float, peak_memory: int) -> None:
         time_msg = f"⏱ Elapsed Time: {elapsed_time:.3f} seconds"
         mem_msg = f"🧠 Peak Memory: {peak_memory / (1024 * 1024):.3f} MB"
         self.metrics.setPlainText(f"{time_msg}\n{mem_msg}")
+
+    def generate_new_points(self) -> None:
+        count = self.point_count_sb.value()
+        max_coord = self.point_max_sb.value()
+        try:
+            generate_points((0, max_coord), count, self.DOTS_FILE)
+            points = point_reader(self.DOTS_FILE)
+            if isinstance(points, list):
+                self.points = points
+                plot_data([], [], self.points)
+                self.result.setPixmap(QPixmap("media/result.png"))
+                self.do_things_btn.setEnabled(True)
+        except Exception as e:
+            print(f"Error generating points: {e}")
+
+    def open_points(self) -> None:
+        file_name, _ = QFileDialog.getOpenFileName(
+            self,
+            "Відкрити файл з точками",
+            "",
+            "JSON Files (*.json)"
+        )
+        if file_name:
+            try:
+                points = point_reader(file_name)
+                self.points = points
+                plot_data([], [], self.points)
+                self.result.setPixmap(QPixmap("media/result.png"))
+                self.do_things_btn.setEnabled(True)
+            except Exception as e:
+                print(f"Error opening file: {e}")
+
+    def save_points(self) -> None:
+        file_name, _ = QFileDialog.getSaveFileName(
+            self,
+            "Зберегти точки",
+            "",
+            "JSON Files (*.json)"
+        )
+        if file_name and self.points:
+            point_writer(file_name, self.points)
 
 
 if __name__ == "__main__":

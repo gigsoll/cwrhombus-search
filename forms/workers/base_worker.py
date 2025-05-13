@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 
 import psutil
 from PyQt6.QtCore import QObject, pyqtSignal
-
+from classes.point import Point
 from solutions.solution_interface import SolutionInterface
 
 
@@ -18,11 +18,11 @@ class BaseWorker(QObject, ABC, metaclass=MetaQObject):
     finished = pyqtSignal(object, object)
     stats = pyqtSignal(float, int)
 
-    def __init__(self, solver: SolutionInterface, file: str, 
+    def __init__(self, solver: SolutionInterface, data: list[Point],
                  area: tuple[int, int] = None):
         super().__init__()
         self.solver = solver
-        self.file = file
+        self.data = data
         self.area = area
         self.total_steps = 0
         self.current_step = 0
@@ -50,11 +50,11 @@ class BaseWorker(QObject, ABC, metaclass=MetaQObject):
 
         if self.area:
             squares, rhombs = self.solver.solve(
-                self.file, self.area, on_progress=report_progress
+                self.data, self.area, on_progress=report_progress
             )
         else:
             squares, rhombs = self.solver.solve(
-                self.file, area=None, on_progress=report_progress
+                self.data, area=None, on_progress=report_progress
             )
 
         elapsed = time.perf_counter() - start_time
