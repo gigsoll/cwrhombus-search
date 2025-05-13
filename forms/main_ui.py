@@ -1,24 +1,28 @@
 import sys
-from PyQt6.QtWidgets import (QMainWindow,
-                             QWidget,
-                             QApplication,
-                             QPushButton,
-                             QRadioButton,
-                             QLabel,
-                             QSpinBox,
-                             QTextEdit,
-                             QButtonGroup,
-                             QVBoxLayout,
-                             QHBoxLayout,
-                             QCheckBox,
-                             QProgressBar,)
-from PyQt6.QtGui import QGuiApplication, QPixmap
-from PyQt6.QtCore import QThread
-from forms.workers.bruteforce import BrutforceWorker
-from forms.workers.smort import SmortWorker
 from typing import cast
+
+from PyQt6.QtCore import QThread
+from PyQt6.QtGui import QGuiApplication, QPixmap
+from PyQt6.QtWidgets import (
+    QApplication,
+    QButtonGroup,
+    QCheckBox,
+    QHBoxLayout,
+    QLabel,
+    QMainWindow,
+    QProgressBar,
+    QPushButton,
+    QRadioButton,
+    QSpinBox,
+    QTextEdit,
+    QVBoxLayout,
+    QWidget,
+)
+
 from classes.point import point_reader
+from forms.workers.bruteforce import BrutforceWorker
 from forms.workers.graph import plot_data
+from forms.workers.smort import SmortWorker
 
 
 class MainUI(QMainWindow):
